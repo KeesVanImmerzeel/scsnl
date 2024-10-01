@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{.Qpiek_100jr}
 \alias{.Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, TN en Q}
+\title{Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.}
 \usage{
 .Qpiek_100jr(x, df = Extreme_buien_table)
 }
@@ -15,7 +15,7 @@
 Tpiek, Qpiek, TN en Q (named vector)
 }
 \description{
-Bereken Tpiek, Qpiek, TN en Q
+Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
 }
 \details{
 \itemize{
@@ -39,7 +39,7 @@ Bereken Tpiek, Qpiek, TN en Q
 }
 
 \itemize{
-\item TN: Duur van de bui (uur).
+\item TN: Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 }
 
 \itemize{

@@ -1,10 +1,4 @@
----
-Title:    Package 'scsnl'  
-Author:   C.H. van Immerzeel  
-Date:     september 26, 20224
----
-
-# scsnl
+% Package 'scsnl'  
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -35,9 +29,9 @@ Als raster-kaarten beschikbaar zijn van alle invoer parameters dan wordt de piek
     * `Tb`: Tijdbasis van de afvoergolf (uur).
     * `Tpiek`: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
     * `Qpiek`: Qpiek: Hoogte van de piekafvoer (mm/uur).
-* `Qpiek_100jr()`: Maak kaarten (SpatRasters) vanTpiek, Qpiek, TN en Q.
+* `Qpiek_100jr()`: Maak kaarten (SpatRasters) van Tpiek, Qpiek, TN en Q. Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
   * Input:
-    * Spatraster met layers bmax, L, i (zie hierboven).
+    * Spatraster met layers bmax, L, i, TN (optioneel). Toelichting: zie hierboven.
   * Output:
     * Spatraster met layers Tpiek, Qpiek, TN en Q (zie hierboven).
     
@@ -56,11 +50,15 @@ Als raster-kaarten beschikbaar zijn van alle invoer parameters dan wordt de piek
 
 ## Voorbeelden
 
-Voor meer informatie:
+In Rstudio kan als volgt meer informatie over deze package worden verkregen:
 
 ``` r
 library(scsnl)
 ?scsnl
 
 ```
+
+
+[image](https://github.com/user-attachments/assets/35d2319c-ec2a-4768-a20a-f57d39a85d55)
+
 

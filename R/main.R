@@ -153,7 +153,7 @@ Qpiek <- function(qeff, tb) {
   return(2*qeff/tb)
 }
 
-#' Bereken Tpiek, Qpiek, TN en Q
+#' Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
 #'
 #' @param x named vector with (bmax, L, i)
 #' @param df \code{\link{Extreme_buien_table}}
@@ -163,17 +163,42 @@ Qpiek <- function(qeff, tb) {
 #' @return Tpiek, Qpiek, TN en Q (named vector)
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
-#' @details * TN: Duur van de bui (uur).
+#' @details * TN: Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 #' @details * Q: Hoeveelheid neerslag in de bui (mm).
 # @export
 .Qpiek_100jr <- function(x, df = Extreme_buien_table) {
-  if (any(is.na(x))) {
-    res <- c(Tpiek = NA, Qpiek = NA, TN=NA, Q=NA)
+  res <- c(
+    Tpiek = NA,
+    Qpiek = NA,
+    TN = NA,
+    Q = NA
+  )
+  if (is.na(x['TN'])) {
+    #TN not specified so TN with max Qpiek is selected.
+    if (all(!is.na(x))) {
+      res <- Qpiek_table_100jr(df, x['bmax'], x['L'], x['i']) |> dplyr::slice(which.max(Qpiek))
+      res <- c(
+        Tpiek = res[1, ]$Tpiek,
+        Qpiek = res[1, ]$Qpiek,
+        TN = res[1, ]$TN,
+        Q = res[1, ]$Q
+      )
+    }
   } else {
-    res <- Qpiek_table_100jr(df, x['bmax'], x['L'], x['i']) |> dplyr::slice(which.max(Qpiek))
-    res <- c(Tpiek = res[1, ]$Tpiek, Qpiek = res[1, ]$Qpiek, TN=res[1, ]$TN, Q=res[1, ]$Q)
+    #TN is specified. Corresponding Qpiek is selected.
+    if (all(!is.na(x))) {
+      res <- Qpiek_table_100jr(df, x['bmax'], x['L'], x['i']) |> dplyr::filter(TN ==
+                                                                                 x['TN'])
+      if (nrow(res) == 1) {
+        res <- c(
+          Tpiek = res[1, ]$Tpiek,
+          Qpiek = res[1, ]$Qpiek,
+          TN = res[1, ]$TN,
+          Q = res[1, ]$Q
+        )
+      }
+    }
   }
-  #res <- res[1,]$Tpiek
   return(res)
 }
 
@@ -230,7 +255,10 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' Bereken Tpiek, Qpiek, TN en Q (Spatrasters).
 #'
 #' @param r Spatraster met layers bmax, L, i
+#' @param TN Duur van de bui (uur). Optionele input.
 #' @param df \code{\link{Extreme_buien_table}}
+#' @details Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
+#' @details In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
 #' @details * bmax: Globale schatting van de totale maximale berging (mm)
 #' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
@@ -243,9 +271,17 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 #' names(bmax) <- "bmax"
 #' r <- c(terra::rast(r_ex), bmax)
-#' r_Qpiek_100jr <- r |> Qpiek_100jr() }
+#' r_Qpiek_100jr <- r |> Qpiek_100jr()
+#' of
+#' r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
 #' @export
-Qpiek_100jr <- function(r, df = Extreme_buien_table) {
+Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
+  if (!is.null(TN)) {
+    x <- r$L
+    values(x) <- TN
+    names(x) <- "TN"
+    r <- c(r, x)
+  }
   n <- parallelly::availableCores()
   print(paste(n, 'cores detected. Using', n - 1))
   res <- terra::app(x=r, fun=.Qpiek_100jr, df=df, cores = n-1)

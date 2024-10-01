@@ -35,6 +35,7 @@
 #'
 #' @importFrom terra app
 #' @importFrom terra rast
+#' @importFrom terra 'values<-'
 #'
 #' @importFrom parallelly availableCores
 #'

@@ -4,10 +4,12 @@
 \alias{Qpiek_100jr}
 \title{Bereken Tpiek, Qpiek, TN en Q (Spatrasters).}
 \usage{
-Qpiek_100jr(r, df = Extreme_buien_table)
+Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 }
 \arguments{
 \item{r}{Spatraster met layers bmax, L, i}
+
+\item{TN}{Duur van de bui (uur). Optionele input.}
 
 \item{df}{\code{\link{Extreme_buien_table}}}
 }
@@ -18,6 +20,10 @@ Spatraster met layers Tpiek, Qpiek, TN en Q
 Bereken Tpiek, Qpiek, TN en Q (Spatrasters).
 }
 \details{
+Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
+
+In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
+
 \itemize{
 \item bmax: Globale schatting van de totale maximale berging (mm)
 }
@@ -44,5 +50,7 @@ bmax <- terra::rast(r_ex) |> Bmax()
 of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 names(bmax) <- "bmax"
 r <- c(terra::rast(r_ex), bmax)
-r_Qpiek_100jr <- r |> Qpiek_100jr() }
+r_Qpiek_100jr <- r |> Qpiek_100jr()
+of
+r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
 }
