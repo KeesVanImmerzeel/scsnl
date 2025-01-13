@@ -1,0 +1,12 @@
+<PAMDataset>
+  <PAMRasterBand band="1">
+    <Description>GHG_2011_2018_L1</Description>
+    <Metadata>
+      <MDI key="STATISTICS_MAXIMUM">6.5862674713135</MDI>
+      <MDI key="STATISTICS_MEAN">2.3039820851205</MDI>
+      <MDI key="STATISTICS_MINIMUM">-0.2414974719286</MDI>
+      <MDI key="STATISTICS_STDDEV">1.6211659901765</MDI>
+      <MDI key="STATISTICS_VALID_PERCENT">92.8</MDI>
+    </Metadata>
+  </PAMRasterBand>
+</PAMDataset>
