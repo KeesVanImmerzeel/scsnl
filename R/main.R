@@ -217,11 +217,14 @@ Tpiek <- function(tb) {
 
 #' Maak een functie die de hoogte van afvoer geeft op t=t.
 #'
-#' @param Qpiek Hoogte van de maximale piekafvoer (mm/uur) [numeric]
 #' @param Tpiek De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur) [numeric]
+#' @param Qpiek Hoogte van de maximale piekafvoer (mm/uur) [numeric]
 #' @param Tb Tijdbasis van de afvoergolf (uur) [numeric]
 #' @return Functie die de hoogte van afvoer geeft op t=t (mm/uur).
-Qfun<- function(Qpiek, Tpiek, Tb) {
+.Qfun<- function(Tpiek, Qpiek, Tb) {
+  if (any(is.na(Tpiek), is.na(Qpiek), is.na(Tb))) {
+    return(NA)
+  }
   x <- c(0, Tpiek, Tb)
   y <- c(0, Qpiek, 0 )
   stats::approxfun(x, y, method="linear", rule=2:2)
@@ -247,7 +250,7 @@ Bmax <- function(r, df1 = Bmax_table,
   n <- parallel::detectCores()
   n <- max(min(n - 1, 8), 1)
   print(paste("Cores used:", n))
-  res <- terra::app(x=r, fun=.Bmax, df1=df1, df2=df2, df3=df3, cores = n-1)
+  res <- terra::app(x=r, fun=.Bmax, df1=df1, df2=df2, df3=df3, cores = n)
   names(res) <- "bmax"
   return(res)
 }
@@ -281,7 +284,7 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
   return(df)
 }
 
-#' Bereken Tpiek, Qpiek, TN en Q (Spatrasters).
+#' Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).
 #'
 #' @param r Spatraster met layers bmax, L, i
 #' @param TN Duur van de bui (uur). Optionele input.
@@ -295,15 +298,20 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
 #' @details * Tb: Tijdbasis van de afvoergolf (uur)
 #' @details * Q: Hoeveelheid neerslag in de bui (mm).
-#' @return Spatraster met layers Tpiek, Qpiek, TN en Q
+#' @return Spatraster met layers Tpiek, Qpiek, TNTc, Tb en Q
 #' @examples
 #' \dontrun{
 #' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
 #' bmax <- r_ex |> Bmax()
-#' of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+#'
+#' of direct:
+#' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+#'
 #' r <- c(r_ex, bmax)
 #' r_Qpiek_100jr <- r |> Qpiek_100jr()
+#'
 #' of
+#'
 #' r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
 #' @export
 Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
@@ -316,12 +324,38 @@ Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
   n <- parallel::detectCores()
   n <- max(min(n - 1, 8), 1)
   print(paste("Cores used:", n))
-  res <- terra::app(x=r, fun=.Qpiek_100jr, df=df, cores = n-1)
+  res <- terra::app(x=r, fun=.Qpiek_100jr, df=df, cores = n)
   return(res)
 }
 
-
-
-
+#' Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u)
+#'
+#' @param x Spatraster met (named) layers Tpiek, Qpiek, Tb
+#' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
+#' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
+#' @details * Tb: Tijdbasis van de afvoergolf (uur)
+#' @return List van functies waarmee per rasterpunt de afvoer (mm/u) kan worden berekend als functie van de tijd (uur).
+#' @examples
+#' \dontrun{
+#' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+#' bmax <- r_ex |> Bmax()
+#'
+#' of direct:
+#' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+#'
+#' r <- c(r_ex, bmax)
+#' x <- r |> Qpiek_100jr(TN=2)
+#'
+#' of direct:
+#' x <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
+#'
+#' Qfuns <- Qfun(x)
+#' afvoer_rasterpunt1 <- Qfuns[[1]](4)
+#'   }
+#' @export
+Qfun <- function(x){
+  df <- data.frame(Tpiek=terra::values(x$Tpiek), Qpiek=terra::values(x$Qpiek), Tb=terra::values(x$Tb))
+  purrr::pmap(df, .Qfun)
+}
 
 

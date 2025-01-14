@@ -23,6 +23,8 @@ Als raster-kaarten beschikbaar zijn van alle invoer parameters dan wordt de piek
   * Output: tabel met kolommen:
     * `FREQ`: Frequentie: ... keer per jaar (-).
     * `TN`: Duur van de bui (uur).
+    * `Tc`: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur).
+    * `Tb`: Tijdbasis van de afvoergolf (uur).
     * `Q`: Hoeveelheid neerslag in de bui (mm).
     * `Qeff`: Afgevoerde hoeveelheid (mm).
     * `Ba`: Benutte berging tijdens afvoer (mm).
@@ -33,11 +35,18 @@ Als raster-kaarten beschikbaar zijn van alle invoer parameters dan wordt de piek
   * Input:
     * Spatraster met layers bmax, L, i, TN (optioneel). Toelichting: zie hierboven.
   * Output:
-    * Spatraster met layers Tpiek, Qpiek, TN en Q (zie hierboven).
+    * Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q (zie hierboven).
+
+* `Qfun()`: Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u).
+  * Input:
+    * `x`: Spatraster met (named) layers Tpiek, Qpiek, Tb. Toelichting: zie hierboven.
+  * Output:
+    * List van functies waarmee per rasterpunt de afvoer (mm/u) kan worden berekend als functie van de tijd (uur).
+
     
 ## Datasets
 
-* `r_ex`: Example input SpatRaster with layers of the Beerze region (Netherlands).
+* `r_ex`: Example input SpatRaster with layers of the Beerze region (Netherlands). Used as: `r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()`
 * `Bmax_table`: Eerste schatting van de maximale bodemberging (mm) met en zonder drainage.
 * `Bbovengronds_table`: Globale schatting van de maximale berging in/op onbegroeide bodem.
 * `Bmax_onbegroeid_table`: Globale schatting van de maximale berging in/op onbegroeide bodem.

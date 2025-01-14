@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{Qpiek_100jr}
 \alias{Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, TN en Q (Spatrasters).}
+\title{Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).}
 \usage{
 Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 }
@@ -14,10 +14,10 @@ Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 \item{df}{\code{\link{Extreme_buien_table}}}
 }
 \value{
-Spatraster met layers Tpiek, Qpiek, TN en Q
+Spatraster met layers Tpiek, Qpiek, TNTc, Tb en Q
 }
 \description{
-Bereken Tpiek, Qpiek, TN en Q (Spatrasters).
+Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).
 }
 \details{
 Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
@@ -56,9 +56,14 @@ In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de t
 \dontrun{
 r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
 bmax <- r_ex |> Bmax()
-of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+
+of direct:
+bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+
 r <- c(r_ex, bmax)
 r_Qpiek_100jr <- r |> Qpiek_100jr()
+
 of
+
 r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
 }

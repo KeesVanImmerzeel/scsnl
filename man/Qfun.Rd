@@ -2,20 +2,47 @@
 % Please edit documentation in R/main.R
 \name{Qfun}
 \alias{Qfun}
-\title{Maak een functie die de hoogte van afvoer geeft op t=t.}
+\title{Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u)}
 \usage{
-Qfun(Qpiek, Tpiek, Tb)
+Qfun(x)
 }
 \arguments{
-\item{Qpiek}{Hoogte van de maximale piekafvoer (mm/uur) \link{numeric}}
-
-\item{Tpiek}{De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur) \link{numeric}}
-
-\item{Tb}{Tijdbasis van de afvoergolf (uur) \link{numeric}}
+\item{x}{Spatraster met (named) layers Tpiek, Qpiek, Tb}
 }
 \value{
-Functie die de hoogte van afvoer geeft op t=t (mm/uur).
+List van functies waarmee per rasterpunt de afvoer (mm/u) kan worden berekend als functie van de tijd (uur).
 }
 \description{
-Maak een functie die de hoogte van afvoer geeft op t=t.
+Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u)
+}
+\details{
+\itemize{
+\item Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
+}
+
+\itemize{
+\item Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
+}
+
+\itemize{
+\item Tb: Tijdbasis van de afvoergolf (uur)
+}
+}
+\examples{
+\dontrun{
+r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+bmax <- r_ex |> Bmax()
+
+of direct:
+bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+
+r <- c(r_ex, bmax)
+x <- r |> Qpiek_100jr(TN=2)
+
+of direct:
+x <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
+
+Qfuns <- Qfun(x)
+afvoer_rasterpunt1 <- Qfuns[[1]](4)
+  }
 }
