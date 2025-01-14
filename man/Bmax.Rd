@@ -28,6 +28,6 @@ Maak kaart (SpatRaster) van de globale schatting van de totale maximale berging 
 }
 \examples{
 \dontrun{
-r_ex <- file.path( find.package("scsnl"), "inst", "extdata", "r_ex.tif") |> terra::rast()
-terra::rast(r_ex) |> Bmax()}
+r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+bmax <- r_ex |> Bmax()}
 }

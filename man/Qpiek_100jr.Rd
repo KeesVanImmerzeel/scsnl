@@ -41,16 +41,23 @@ In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de t
 }
 
 \itemize{
+\item Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
+}
+
+\itemize{
+\item Tb: Tijdbasis van de afvoergolf (uur)
+}
+
+\itemize{
 \item Q: Hoeveelheid neerslag in de bui (mm).
 }
 }
 \examples{
 \dontrun{
-r_ex <- file.path( find.package("scsnl"), "inst", "extdata", "r_ex.tif") |> terra::rast()
-bmax <- terra::rast(r_ex) |> Bmax()
+r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+bmax <- r_ex |> Bmax()
 of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
-names(bmax) <- "bmax"
-r <- c(terra::rast(r_ex), bmax)
+r <- c(r_ex, bmax)
 r_Qpiek_100jr <- r |> Qpiek_100jr()
 of
 r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}

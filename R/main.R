@@ -109,15 +109,19 @@ Bmax_onbegroeid <- function(df = Bmax_onbegroeid_table,
 # @return data.frame met kolommen Qeff=afgevoerde hoeveelheid (mm) en Ba=Benutte berging tijdens afvoer (mm) [numeric]
 # @example Qeff(bmax=65, Q=50)
 Qeff <- function(Q, bmax) {
-  Bi <- 0.2*bmax # Initele benutte berging zonder afvoer (mm)
+  df <- data.frame(Qeff = NA, Ba = NA)
+  if (any(is.na(Q), is.na(bmax))) {
+    return(df)
+  }
+  Bi <- 0.2 * bmax # Initele benutte berging zonder afvoer (mm)
   if (Q > Bi) {
-    res <- (Q-Bi)^2 / (Q+0.8*bmax)
-    Ba <- bmax * (Q-Bi) / (Q+0.8*bmax) # Benutte berging tijdens afvoer (mm)
+    res <- (Q - Bi) ^ 2 / (Q + 0.8 * bmax)
+    Ba <- bmax * (Q - Bi) / (Q + 0.8 * bmax) # Benutte berging tijdens afvoer (mm)
     Ba <- min(Ba, bmax)
   } else {
     res <- 0
   }
-  df <- data.frame(Qeff=res, Ba=Ba)
+  df <- data.frame(Qeff = res, Ba = Ba)
   return(df)
 }
 
@@ -125,24 +129,18 @@ Qeff <- function(Q, bmax) {
 # @param bmax: zie hierboven [numeric]
 # @param i Gemiddelde terreinheilling van het stroomgebied (m/m). [numeric]
 # @return Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur) [numeric]
-# @example Tc(L=5.25, bmax=65, i=1.2/1000)
-Tc <- function(L, bmax, i) {
+# @example get_Tc(L=5.25, bmax=65, i=1.2/1000)
+get_Tc <- function(L, bmax, i) {
   res <- L^0.8 * (bmax+25)^0.7 / (150*sqrt(i))
   return(res)
 }
 
 # @param tn Duur van de bui (uur) [numeric]
-# @param tc concentratietijd (uur), zie functie Tc() [numeric]
+# @param tc concentratietijd (uur), zie functie get_Tc() [numeric]
 # @return Tijdbasis van de afvoergolf (uur) [numeric]
-# @example Tb(tn=6, tc=16.9)
-Tb <- function(tn, tc) {
+# @example get_Tb(tn=6, tc=16.9)
+get_Tb <- function(tn, tc) {
   return(1.33*tn + 1.6*tc)
-}
-
-# @param tb Tijdbasis van de afvoergolf (uur) [numeric]
-# @return De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer [uur]
-Tpiek <- function(tb) {
-  return(3/8*tb)
 }
 
 # @param qeff afgevoerde hoeveelheid (mm), zie functie Qeff() [numeric]
@@ -164,6 +162,8 @@ Qpiek <- function(qeff, tb) {
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
 #' @details * TN: Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
+#' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
+#' @details * Tb: Tijdbasis van de afvoergolf (uur)
 #' @details * Q: Hoeveelheid neerslag in de bui (mm).
 # @export
 .Qpiek_100jr <- function(x, df = Extreme_buien_table) {
@@ -171,6 +171,8 @@ Qpiek <- function(qeff, tb) {
     Tpiek = NA,
     Qpiek = NA,
     TN = NA,
+    Tc = NA,
+    Tb = NA,
     Q = NA
   )
   if (is.na(x['TN'])) {
@@ -181,6 +183,8 @@ Qpiek <- function(qeff, tb) {
         Tpiek = res[1, ]$Tpiek,
         Qpiek = res[1, ]$Qpiek,
         TN = res[1, ]$TN,
+        Tc = res[1, ]$Tc,
+        Tb = res[1, ]$Tb,
         Q = res[1, ]$Q
       )
     }
@@ -194,12 +198,33 @@ Qpiek <- function(qeff, tb) {
           Tpiek = res[1, ]$Tpiek,
           Qpiek = res[1, ]$Qpiek,
           TN = res[1, ]$TN,
+          Tc = res[1, ]$Tc,
+          Tb = res[1, ]$Tb,
           Q = res[1, ]$Q
         )
       }
     }
   }
+  #print(names(res))
   return(res)
+}
+
+# @param tb Tijdbasis van de afvoergolf (uur) [numeric]
+# @return De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer [uur]
+Tpiek <- function(tb) {
+  return(3/8*tb)
+}
+
+#' Maak een functie die de hoogte van afvoer geeft op t=t.
+#'
+#' @param Qpiek Hoogte van de maximale piekafvoer (mm/uur) [numeric]
+#' @param Tpiek De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur) [numeric]
+#' @param Tb Tijdbasis van de afvoergolf (uur) [numeric]
+#' @return Functie die de hoogte van afvoer geeft op t=t (mm/uur).
+Qfun<- function(Qpiek, Tpiek, Tb) {
+  x <- c(0, Tpiek, Tb)
+  y <- c(0, Qpiek, 0 )
+  stats::approxfun(x, y, method="linear", rule=2:2)
 }
 
 # Exported functions ***********************************************************
@@ -213,22 +238,24 @@ Qpiek <- function(qeff, tb) {
 #' @return Kaart (SpatRaster) van de globale schatting van de totale maximale berging (mm).
 #' @examples
 #' \dontrun{
-#' r_ex <- file.path( find.package("scsnl"), "inst", "extdata", "r_ex.tif") |> terra::rast()
-#' terra::rast(r_ex) |> Bmax()}
+#' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+#' bmax <- r_ex |> Bmax()}
 #' @export
 Bmax <- function(r, df1 = Bmax_table,
                  df2 = Bbovengronds_table,
                  df3 = Bmax_onbegroeid_table) {
-  n <- parallelly::availableCores()
-  print(paste(n, 'cores detected. Using', n - 1))
+  n <- parallel::detectCores()
+  n <- max(min(n - 1, 8), 1)
+  print(paste("Cores used:", n))
   res <- terra::app(x=r, fun=.Bmax, df1=df1, df2=df2, df3=df3, cores = n-1)
+  names(res) <- "bmax"
   return(res)
 }
 
 #' Bereken tabel met piekafvoer parameters bij een herhalingstijd van 100 jaar.
 #'
 #' @param df Extreme_buien_table
-#' @param bmax Globale schatting van de totale maximale berging (mm). Zie functie Bmax().
+#' @param bmax Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().
 #' @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
 #' @param i Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @returns data.frame met kolommen: FREQ, TN, Q, Qeff, Ba, Tb, Tpiek, Qpiek.
@@ -238,6 +265,7 @@ Bmax <- function(r, df1 = Bmax_table,
 #' @details * Qeff: Afgevoerde hoeveelheid (mm).
 #' @details * Ba: Benutte berging tijdens afvoer (mm).
 #' @details * Tb: Tijdbasis van de afvoergolf (uur).
+#' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de piekafvoer (mm/uur).
 #' @examples
@@ -246,8 +274,8 @@ Bmax <- function(r, df1 = Bmax_table,
 Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
   df %<>% dplyr::filter(FREQ==0.01)
   df <-cbind( df, do.call("rbind", apply(as.array(df$Q), MARGIN=1, FUN=Qeff, bmax=bmax)) )
-  tc <- Tc(L, bmax, i)
-  df$Tb <- unlist(Map(Tb, df$TN, tc))
+  df$Tc <- unlist(Map(f=get_Tc, L, bmax, i))
+  df$Tb <- unlist(Map(f=get_Tb, df$TN, df$Tc))
   df$Tpiek <- unlist(Map(f=Tpiek, df$Tb))
   df$Qpiek <- unlist(Map(f=Qpiek, df$Qeff, df$Tb))
   return(df)
@@ -264,15 +292,16 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @details * TN: Duur van de bui (uur).
+#' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
+#' @details * Tb: Tijdbasis van de afvoergolf (uur)
 #' @details * Q: Hoeveelheid neerslag in de bui (mm).
 #' @return Spatraster met layers Tpiek, Qpiek, TN en Q
 #' @examples
 #' \dontrun{
-#' r_ex <- file.path( find.package("scsnl"), "inst", "extdata", "r_ex.tif") |> terra::rast()
-#' bmax <- terra::rast(r_ex) |> Bmax()
+#' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
+#' bmax <- r_ex |> Bmax()
 #' of: bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
-#' names(bmax) <- "bmax"
-#' r <- c(terra::rast(r_ex), bmax)
+#' r <- c(r_ex, bmax)
 #' r_Qpiek_100jr <- r |> Qpiek_100jr()
 #' of
 #' r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
@@ -284,11 +313,14 @@ Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
     names(x) <- "TN"
     r <- c(r, x)
   }
-  n <- parallelly::availableCores()
-  print(paste(n, 'cores detected. Using', n - 1))
+  n <- parallel::detectCores()
+  n <- max(min(n - 1, 8), 1)
+  print(paste("Cores used:", n))
   res <- terra::app(x=r, fun=.Qpiek_100jr, df=df, cores = n-1)
   return(res)
 }
+
+
 
 
 

@@ -41,7 +41,7 @@ Layers:
 \item landgebruik: 0=korte vegetatie, 1=braakliggende grond/onverharde weg, 2=verharde weg/bebouwing, 3=bos.\cr
 \item retentie: Berging in retentie gebieden.\cr
 \item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km). \cr
-\item i: Gemiddelde terreinheilling van het stroomgebied (m/m).
+\item i: Gemiddelde terreinheilling van het stroomgebied (m/m)..
 }
 }
 \keyword{datasets}

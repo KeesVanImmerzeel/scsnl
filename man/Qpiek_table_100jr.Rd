@@ -9,7 +9,7 @@ Qpiek_table_100jr(df = Extreme_buien_table, bmax, L, i)
 \arguments{
 \item{df}{Extreme_buien_table}
 
-\item{bmax}{Globale schatting van de totale maximale berging (mm). Zie functie Bmax().}
+\item{bmax}{Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().}
 
 \item{L}{Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)}
 
@@ -44,6 +44,10 @@ Bereken tabel met piekafvoer parameters bij een herhalingstijd van 100 jaar.
 
 \itemize{
 \item Tb: Tijdbasis van de afvoergolf (uur).
+}
+
+\itemize{
+\item Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
 }
 
 \itemize{

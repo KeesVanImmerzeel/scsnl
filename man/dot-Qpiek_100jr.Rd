@@ -43,6 +43,14 @@ Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
 }
 
 \itemize{
+\item Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
+}
+
+\itemize{
+\item Tb: Tijdbasis van de afvoergolf (uur)
+}
+
+\itemize{
 \item Q: Hoeveelheid neerslag in de bui (mm).
 }
 }
