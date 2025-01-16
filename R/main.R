@@ -1,5 +1,16 @@
 # Internal functions ###########################################################
 
+# Bepaal het aantal cores dat gebruikt gaat worden voor parallelle berekeningen
+#
+# @param max_ncores Maximum  aantal gebruikte cores [numeric]
+# @return Aantal cores dat gebruikt gaat worden voor parallelle berekeningen [-]
+ncores <- function(max_ncores = 8) {
+  n <- parallel::detectCores()
+  n <- max(min(n - 1, max_ncores), 1)
+  print(paste("Cores used:", n))
+  return(n)
+}
+
 # Eerste schatting van de maximale bodemberging (mm) NA if invalid input.
 #
 # @param bofek BOFEK-profiel (320, 302, 505, 406, 405,203 of 103). [integer]
@@ -151,20 +162,21 @@ Qpiek <- function(qeff, tb) {
   return(2*qeff/tb)
 }
 
-#' Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
+#' Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.
 #'
-#' @param x named vector with (bmax, L, i)
+#' @param x named vector with (bmax, L, i en optioneel TN)
 #' @param df \code{\link{Extreme_buien_table}}
 #' @details * bmax: Globale schatting van de totale maximale berging (mm)
 #' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
+#' @details * TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
+#' @details *     Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
 #' @return Tpiek, Qpiek, TN en Q (named vector)
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
-#' @details * TN: Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 #' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
 #' @details * Tb: Tijdbasis van de afvoergolf (uur)
-#' @details * Q: Hoeveelheid neerslag in de bui (mm).
+#' @details * Q: Hoeveelheid neerslag gedurende een bui met de duur TN (uur), (mm).
 # @export
 .Qpiek_100jr <- function(x, df = Extreme_buien_table) {
   res <- c(
@@ -215,19 +227,27 @@ Tpiek <- function(tb) {
   return(3/8*tb)
 }
 
-#' Maak een functie die de hoogte van afvoer geeft op t=t.
+#' Afvoer (mm/u) op tijdstip t (uur).
 #'
-#' @param Tpiek De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur) [numeric]
-#' @param Qpiek Hoogte van de maximale piekafvoer (mm/uur) [numeric]
-#' @param Tb Tijdbasis van de afvoergolf (uur) [numeric]
-#' @return Functie die de hoogte van afvoer geeft op t=t (mm/uur).
-.Qfun<- function(Tpiek, Qpiek, Tb) {
-  if (any(is.na(Tpiek), is.na(Qpiek), is.na(Tb))) {
+#' @param x Named vector with Tpiek, Qpiek, Tb
+#' @param t Tijd (uur)
+#' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
+#' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
+#' @details * Tb: Tijdbasis van de afvoergolf (uur)
+#' @return Afvoer (mm/uur) op tijdstip t (uur)
+#' @examples
+#' \dontrun{
+#' x <- c(Tpiek=2.5, Qpiek=2, Tb=5)
+#' t <- seq(0,5,0.5)
+#' .afv(x, t)
+#' }
+#'
+.afv <- function(x, t) {
+  if (any(is.na(x['Tpiek']), is.na(x['Qpiek']), is.na(x['Tb']))) {
     return(NA)
   }
-  x <- c(0, Tpiek, Tb)
-  y <- c(0, Qpiek, 0 )
-  stats::approxfun(x, y, method="linear", rule=2:2)
+  res <- stats::approx(x=c(0, x['Tpiek'], x['Tb']), y=c(0, x['Qpiek'], 0 ), xout=t, method="linear", rule=2:2)
+  return(res$y)
 }
 
 # Exported functions ***********************************************************
@@ -284,21 +304,22 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
   return(df)
 }
 
-#' Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).
+#' Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.
 #'
 #' @param r Spatraster met layers bmax, L, i
-#' @param TN Duur van de bui (uur). Optionele input.
+#' @param TN Duur van de bui (uur). Optionele input. [numeric]
 #' @param df \code{\link{Extreme_buien_table}}
 #' @details Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
-#' @details In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
+#' @details De opgegeven waarde van TN moet voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
 #' @details * bmax: Globale schatting van de totale maximale berging (mm)
 #' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
-#' @details * TN: Duur van de bui (uur).
+#' @details * TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
+#' @details *     Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
 #' @details * Tc: Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur)
 #' @details * Tb: Tijdbasis van de afvoergolf (uur)
-#' @details * Q: Hoeveelheid neerslag in de bui (mm).
-#' @return Spatraster met layers Tpiek, Qpiek, TNTc, Tb en Q
+#' @details * Q: Hoeveelheid neerslag gedurende een bui met de duur TN (uur), (mm).
+#' @return Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q
 #' @examples
 #' \dontrun{
 #' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
@@ -307,34 +328,36 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' of direct:
 #' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 #'
-#' r <- c(r_ex, bmax)
-#' r_Qpiek_100jr <- r |> Qpiek_100jr()
+#' r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr()
 #'
 #' of
 #'
-#' r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
+#' r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr(TN=2)}
 #' @export
-Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
+Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
   if (!is.null(TN)) {
     x <- r$L
     values(x) <- TN
     names(x) <- "TN"
     r <- c(r, x)
   }
-  n <- parallel::detectCores()
-  n <- max(min(n - 1, 8), 1)
-  print(paste("Cores used:", n))
-  res <- terra::app(x=r, fun=.Qpiek_100jr, df=df, cores = n)
+  res <- terra::app(
+    x = r,
+    fun = .Qpiek_100jr,
+    df = df,
+    cores = ncores()
+  )
   return(res)
 }
 
-#' Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u)
+#' Maak spatraster(s) van de afvoer (mm/u) op tijdstip t (uur).
 #'
-#' @param x Spatraster met (named) layers Tpiek, Qpiek, Tb
+#' @param r Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 100 jaar)
+#' @param t Tijd (uur) [numeric]
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
 #' @details * Tb: Tijdbasis van de afvoergolf (uur)
-#' @return List van functies waarmee per rasterpunt de afvoer (mm/u) kan worden berekend als functie van de tijd (uur).
+#' @return Spatraster met de afvoer (mm/u) op tijdstip t (uur).
 #' @examples
 #' \dontrun{
 #' r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()
@@ -343,19 +366,26 @@ Qpiek_100jr <- function(r, TN=NULL, df = Extreme_buien_table) {
 #' of direct:
 #' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 #'
-#' r <- c(r_ex, bmax)
-#' x <- r |> Qpiek_100jr(TN=2)
+#' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
+#'   herhalingstijd 100 jaar, duur van de bui TN=2 uur.
+#' r <- c(bmax, r_ex$L, r_ex$i)
+#' r100 <- r |> Qpiek_100jr(TN=2)
 #'
 #' of direct:
-#' x <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
+#' r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
 #'
-#' Qfuns <- Qfun(x)
-#' afvoer_rasterpunt1 <- Qfuns[[1]](4)
+#' Bereken de afvoer na t=5 uur van een bui met een duur van TN=2 uur en een
+#' herhalingstijd van 100 jaar.
+#' afv_t5 <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
 #'   }
 #' @export
-Qfun <- function(x){
-  df <- data.frame(Tpiek=terra::values(x$Tpiek), Qpiek=terra::values(x$Qpiek), Tb=terra::values(x$Tb))
-  purrr::pmap(df, .Qfun)
+afv <- function(r, t) {
+  terra::app(r,
+             fun = .afv,
+             t = t,
+             cores = ncores())
 }
+
+
 
 

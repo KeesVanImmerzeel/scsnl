@@ -23,12 +23,13 @@ Schatting van piekafvoer in vrij afwaterende gebieden in Nederland met de SCS-me
 }
 \details{
 De berekening kan worden gedaan op puntniveau, resulterend in een tabel. Als raster-kaarten beschikbaar
-zijn van alle invoer parameters dan wordt de piekafvoer vlakdekkend berekend.
+zijn van alle invoer parameters dan kan de piekafvoer ook vlakdekkend worden berekend.
 
 Functies:
 
 \code{\link{Bmax}} \cr
-\code{\link{Qpiek_table_100jr}}
+\code{\link{Qpiek_table_100jr}} \cr
+\code{\link{afv}}
 
 Rasters:
 \itemize{

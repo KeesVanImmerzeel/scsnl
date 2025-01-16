@@ -16,7 +16,6 @@ Imports:
     dplyr,
     magrittr,
     parallelly,
-    purrr,
     stats,
     terra
 Depends: 

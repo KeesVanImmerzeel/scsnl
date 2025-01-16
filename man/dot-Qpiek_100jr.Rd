@@ -2,12 +2,12 @@
 % Please edit documentation in R/main.R
 \name{.Qpiek_100jr}
 \alias{.Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.}
+\title{Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.}
 \usage{
 .Qpiek_100jr(x, df = Extreme_buien_table)
 }
 \arguments{
-\item{x}{named vector with (bmax, L, i)}
+\item{x}{named vector with (bmax, L, i en optioneel TN)}
 
 \item{df}{\code{\link{Extreme_buien_table}}}
 }
@@ -15,7 +15,7 @@
 Tpiek, Qpiek, TN en Q (named vector)
 }
 \description{
-Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
+Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.
 }
 \details{
 \itemize{
@@ -31,15 +31,22 @@ Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
 }
 
 \itemize{
+\item TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
+}
+
+\itemize{
+\item 
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
+}\if{html}{\out{</div>}}
+}
+
+\itemize{
 \item Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 }
 
 \itemize{
 \item Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
-}
-
-\itemize{
-\item TN: Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 }
 
 \itemize{
@@ -51,6 +58,6 @@ Bereken Tpiek, Qpiek, TN en Q. TN is optioneel een input variabele.
 }
 
 \itemize{
-\item Q: Hoeveelheid neerslag in de bui (mm).
+\item Q: Hoeveelheid neerslag gedurende een bui met de duur TN (uur), (mm).
 }
 }

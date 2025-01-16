@@ -2,27 +2,27 @@
 % Please edit documentation in R/main.R
 \name{Qpiek_100jr}
 \alias{Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).}
+\title{Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.}
 \usage{
 Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 }
 \arguments{
 \item{r}{Spatraster met layers bmax, L, i}
 
-\item{TN}{Duur van de bui (uur). Optionele input.}
+\item{TN}{Duur van de bui (uur). Optionele input. \link{numeric}}
 
 \item{df}{\code{\link{Extreme_buien_table}}}
 }
 \value{
-Spatraster met layers Tpiek, Qpiek, TNTc, Tb en Q
+Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q
 }
 \description{
-Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters).
+Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.
 }
 \details{
 Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
 
-In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
+De opgegeven waarde van TN moet voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
 
 \itemize{
 \item bmax: Globale schatting van de totale maximale berging (mm)
@@ -37,7 +37,14 @@ In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de t
 }
 
 \itemize{
-\item TN: Duur van de bui (uur).
+\item TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
+}
+
+\itemize{
+\item 
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
+}\if{html}{\out{</div>}}
 }
 
 \itemize{
@@ -49,7 +56,7 @@ In dat geval moet de opgegeven waarde van TN voorkomen in de kolom 'TN' van de t
 }
 
 \itemize{
-\item Q: Hoeveelheid neerslag in de bui (mm).
+\item Q: Hoeveelheid neerslag gedurende een bui met de duur TN (uur), (mm).
 }
 }
 \examples{
@@ -60,10 +67,9 @@ bmax <- r_ex |> Bmax()
 of direct:
 bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 
-r <- c(r_ex, bmax)
-r_Qpiek_100jr <- r |> Qpiek_100jr()
+r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr()
 
 of
 
-r_Qpiek_100jr <- r |> Qpiek_100jr(TN=2)}
+r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr(TN=2)}
 }
