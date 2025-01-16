@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{Qpiek_table_100jr}
 \alias{Qpiek_table_100jr}
-\title{Bereken tabel met piekafvoer parameters bij een herhalingstijd van 100 jaar.}
+\title{Bereken tabel met piekafvoer parameters bij een herhalingstijd van 1/100 jaar.}
 \usage{
 Qpiek_table_100jr(df = Extreme_buien_table, bmax, L, i)
 }
@@ -19,7 +19,7 @@ Qpiek_table_100jr(df = Extreme_buien_table, bmax, L, i)
 data.frame met kolommen: FREQ, TN, Q, Qeff, Ba, Tb, Tpiek, Qpiek.
 }
 \description{
-Bereken tabel met piekafvoer parameters bij een herhalingstijd van 100 jaar.
+Bereken tabel met piekafvoer parameters bij een herhalingstijd van 1/100 jaar.
 }
 \details{
 \itemize{

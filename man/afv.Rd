@@ -7,7 +7,7 @@
 afv(r, t)
 }
 \arguments{
-\item{r}{Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 100 jaar)}
+\item{r}{Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 1/100 jaar)}
 
 \item{t}{Tijd (uur) \link{numeric}}
 }
@@ -39,7 +39,7 @@ of direct:
 bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 
 Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
-  herhalingstijd 100 jaar, duur van de bui TN=2 uur.
+  herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
 r <- c(bmax, r_ex$L, r_ex$i)
 r100 <- r |> Qpiek_100jr(TN=2)
 
@@ -47,7 +47,10 @@ of direct:
 r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
 
 Bereken de afvoer na t=5 uur van een bui met een duur van TN=2 uur en een
-herhalingstijd van 100 jaar.
-afv_t5 <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
+herhalingstijd van 1/100 jaar.
+afv_T100_5uur <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
+
+Idem, bij een herhalingstijd van 1/10 jaar (i.p.v. 1/100 jaar)
+afv_T10_5uur <- afv_T100_5uur * rel_afv(T=1/10)
   }
 }

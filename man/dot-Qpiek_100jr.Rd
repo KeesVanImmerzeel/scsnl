@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{.Qpiek_100jr}
 \alias{.Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.}
+\title{Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 1/100 jaar.}
 \usage{
 .Qpiek_100jr(x, df = Extreme_buien_table)
 }
@@ -15,7 +15,7 @@
 Tpiek, Qpiek, TN en Q (named vector)
 }
 \description{
-Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.
+Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 1/100 jaar.
 }
 \details{
 \itemize{

@@ -162,7 +162,7 @@ Qpiek <- function(qeff, tb) {
   return(2*qeff/tb)
 }
 
-#' Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 100 jaar.
+#' Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalingstijd van 1/100 jaar.
 #'
 #' @param x named vector with (bmax, L, i en optioneel TN)
 #' @param df \code{\link{Extreme_buien_table}}
@@ -252,6 +252,22 @@ Tpiek <- function(tb) {
 
 # Exported functions ***********************************************************
 
+#' Relatieve extreme afvoer (-) bij herhalingstijd van T (x per jaar)
+#'
+#' t.o.v. de extreme afvoer bij een herhalingstijd van eens per 100 jaar (T=0.01).
+#' @param T Herhalingstijd T (x per jaar)
+#' @return Relatieve afvoer (-) bij herhalingstijd van T (x per jaar).
+#' @examples
+#' T <- 10    # 14 keer per jaar
+#' rel_afv(T) # Afvoer t.o.v. de afvoer van eens per 100 jaar (T=0.01)
+#' @source <GWZ tabel 10.6 p. 118> {grondwaterzakboekje}
+#' @export
+rel_afv <- function(T) {
+  x <- log(Extreme_afvoer_table$FREQ)
+  y <- Extreme_afvoer_table$REAFV
+  stats::approx(x, y, xout=log(T), rule=1:1)$y / stats::approx(x, y, xout=log(0.01), rule=1:1)$y
+}
+
 #' Maak kaart (SpatRaster) van de globale schatting van de totale maximale berging (mm).
 #'
 #' @param r Spatraster met layers bofek, landgebruik, gws, tijdstip, buisdrainage, gt, retentie
@@ -275,7 +291,7 @@ Bmax <- function(r, df1 = Bmax_table,
   return(res)
 }
 
-#' Bereken tabel met piekafvoer parameters bij een herhalingstijd van 100 jaar.
+#' Bereken tabel met piekafvoer parameters bij een herhalingstijd van 1/100 jaar.
 #'
 #' @param df Extreme_buien_table
 #' @param bmax Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().
@@ -304,7 +320,7 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
   return(df)
 }
 
-#' Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.
+#' Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 1/100 jaar.
 #'
 #' @param r Spatraster met layers bmax, L, i
 #' @param TN Duur van de bui (uur). Optionele input. [numeric]
@@ -352,7 +368,7 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 
 #' Maak spatraster(s) van de afvoer (mm/u) op tijdstip t (uur).
 #'
-#' @param r Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 100 jaar)
+#' @param r Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 1/100 jaar)
 #' @param t Tijd (uur) [numeric]
 #' @details * Tpiek: De tijd vanaf het begin van de bui tot aan het optreden van de piekafvoer (uur).
 #' @details * Qpiek: Hoogte van de maximale piekafvoer (mm/uur).
@@ -367,7 +383,7 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
 #'
 #' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
-#'   herhalingstijd 100 jaar, duur van de bui TN=2 uur.
+#'   herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
 #' r <- c(bmax, r_ex$L, r_ex$i)
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'
@@ -375,8 +391,11 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
 #'
 #' Bereken de afvoer na t=5 uur van een bui met een duur van TN=2 uur en een
-#' herhalingstijd van 100 jaar.
-#' afv_t5 <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
+#' herhalingstijd van 1/100 jaar.
+#' afv_T100_5uur <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
+#'
+#' Idem, bij een herhalingstijd van 1/10 jaar (i.p.v. 1/100 jaar)
+#' afv_T10_5uur <- afv_T100_5uur * rel_afv(T=1/10)
 #'   }
 #' @export
 afv <- function(r, t) {

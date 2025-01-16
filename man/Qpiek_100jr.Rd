@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{Qpiek_100jr}
 \alias{Qpiek_100jr}
-\title{Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.}
+\title{Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 1/100 jaar.}
 \usage{
 Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 }
@@ -17,7 +17,7 @@ Qpiek_100jr(r, TN = NULL, df = Extreme_buien_table)
 Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q
 }
 \description{
-Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 100 jaar.
+Bereken Tpiek, Qpiek, TN Tc, Tb en Q (Spatrasters) behorende bij een bui met een herhalingstijd van 1/100 jaar.
 }
 \details{
 Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).

@@ -30,6 +30,7 @@ Functies:
 \code{\link{Bmax}} \cr
 \code{\link{Qpiek_table_100jr}} \cr
 \code{\link{afv}}
+\code{\link{rel_afv}}
 
 Rasters:
 \itemize{
