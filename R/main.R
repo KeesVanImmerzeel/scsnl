@@ -388,7 +388,7 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'
 #' of direct:
-#' r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jr.tif") |> terra::rast()
+#' r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jrTN2uur.tif") |> terra::rast()
 #'
 #' Bereken de afvoer na t=5 uur van een bui met een duur van TN=2 uur en een
 #' herhalingstijd van 1/100 jaar.
