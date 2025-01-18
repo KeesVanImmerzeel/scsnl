@@ -65,7 +65,7 @@ r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast(
 bmax <- r_ex |> Bmax()
 
 of direct:
-bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+bmax <- file.path(find.package("scsnl"), "extdata", "bmax.tif") |> terra::rast()
 
 r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr()
 

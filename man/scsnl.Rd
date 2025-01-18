@@ -29,8 +29,9 @@ Functies:
 
 \code{\link{Bmax}} \cr
 \code{\link{Qpiek_table_100jr}} \cr
-\code{\link{afv}}
-\code{\link{rel_afv}}
+\code{\link{afv}} \cr
+\code{\link{rel_afv}} \cr
+\code{\link{t_default}}
 
 Rasters:
 \itemize{

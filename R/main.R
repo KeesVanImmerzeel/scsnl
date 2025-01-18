@@ -342,7 +342,7 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' bmax <- r_ex |> Bmax()
 #'
 #' of direct:
-#' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+#' bmax <- file.path(find.package("scsnl"), "extdata", "bmax.tif") |> terra::rast()
 #'
 #' r_Qpiek_100jr <- c(bmax, r_ex$L, r_ex$i) |> Qpiek_100jr()
 #'
@@ -380,7 +380,7 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' bmax <- r_ex |> Bmax()
 #'
 #' of direct:
-#' bmax <- file.path("data-raw", "example_data", "rasters", "bmax.tif") |> terra::rast()
+#' bmax <- file.path(find.package("scsnl"), "extdata", "bmax.tif") |> terra::rast()
 #'
 #' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
 #'   herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
@@ -388,23 +388,46 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'
 #' of direct:
-#' r100 <-  file.path("data-raw", "example_data", "rasters", "Qpiek_100jrTN2uur.tif") |> terra::rast()
+#' r100 <-  file.path(find.package("scsnl"), "extdata", "Qpiek_100jrTN2uur.tif") |> terra::rast()
 #'
 #' Bereken de afvoer na t=5 uur van een bui met een duur van TN=2 uur en een
-#' herhalingstijd van 1/100 jaar.
+#' Herhalingstijd van 1/100 jaar.
 #' afv_T100_5uur <- afv(r=c(r100$Tpiek, r100$Qpiek, r100$Tb), t=5)
 #'
 #' Idem, bij een herhalingstijd van 1/10 jaar (i.p.v. 1/100 jaar)
 #' afv_T10_5uur <- afv_T100_5uur * rel_afv(T=1/10)
+#'
+#' Bereken afvoer voor een aantal tijdstippen en bewaar het resultaat in 1 Spatraster.
+#' Herhalingstijd van 1/100 jaar, bui met een duur van TN=2 uur.
+#' times <- t_default(r100$Tpiek)
+#' Qafv_100jrTN2uur <- lapply(as.array(times), FUN=afv, r=r100) |> terra::rast()
+#' names(Qafv_100jrTN2uur) <-paste0("afv_t=", times)
 #'   }
 #' @export
-afv <- function(r, t) {
+afv <- function(t, r) {
+  cat("Bereken afvoeren t=", t, "uur.")
   terra::app(r,
              fun = .afv,
              t = t,
              cores = ncores())
 }
 
-
-
-
+#' Suggestie voor uitvoertijden (u)
+#'
+#' @param r Spatraster met het tijdtip van de piekafvoeren Tpiek (u).
+#' @param prc Percentiel waarde van piekafvoeren; prc% van de piekafvoeren is kleiner (-)
+#' @return Gesuggereerde uitvoertijden (u) (numeric vector)
+#' @examples
+#' \dontrun{
+#' r100 <-  file.path(find.package("scsnl"), "extdata", "Qpiek_100jrTN2uur.tif") |> terra::rast()
+#' t <- t_default(r100$Tpiek)
+#' }
+#' @export
+t_default <- function(r, prc=0.95) {
+  x <- graphics::hist(terra::values(r), plot=FALSE)
+  i <- which(cumsum(x$density)< prc)
+  sort(c(x$breaks[i], x$mids[i]))
+}
+# x <- hist(terra::values(r100$Tpiek), plot=FALSE)
+# i <- which(cumsum(x$density)<0.95)
+# c(x$breaks[i], x$mids[i])
