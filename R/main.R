@@ -401,8 +401,10 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' Herhalingstijd van 1/100 jaar, bui met een duur van TN=2 uur.
 #' times <- t_default(r100$Tpiek)
 #' Qafv_100jrTN2uur <- lapply(as.array(times), FUN=afv, r=r100) |> terra::rast()
-#' names(Qafv_100jrTN2uur) <-paste0("Qafv_100jrTN2uur_t=", times)
 #' fnames <- paste0(names(Qafv_100jrTN2uur),".tif")
+#' r_mask <- file.path(find.package("scsnl"), "extdata", "projectgebied.tif") |> terra::rast()
+#' Qafv_100jrTN2uur <- r_mask * Qafv_100jrTN2uur
+#' names(Qafv_100jrTN2uur) <-paste0("Qafv_100jrTN2uur_t=", times)
 #' Qafv_100jrTN2uur |> terra::writeRaster(fnames)
 #'   }
 #' @export
