@@ -383,6 +383,7 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #'
 #' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
 #'   herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
+#' r_ex$i <- mean(terra::values(r_ex$i), na.rm=TRUE)
 #' r <- c(bmax, r_ex$L, r_ex$i)
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'
@@ -400,7 +401,9 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' Herhalingstijd van 1/100 jaar, bui met een duur van TN=2 uur.
 #' times <- t_default(r100$Tpiek)
 #' Qafv_100jrTN2uur <- lapply(as.array(times), FUN=afv, r=r100) |> terra::rast()
-#' names(Qafv_100jrTN2uur) <-paste0("afv_t=", times)
+#' names(Qafv_100jrTN2uur) <-paste0("Qafv_100jrTN2uur_t=", times)
+#' fnames <- paste0(names(Qafv_100jrTN2uur),".tif")
+#' Qafv_100jrTN2uur |> terra::writeRaster(fnames)
 #'   }
 #' @export
 afv <- function(t, r) {
