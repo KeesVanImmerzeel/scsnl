@@ -114,7 +114,6 @@ Bmax_onbegroeid <- function(df = Bmax_onbegroeid_table,
   return(res)
 }
 
-
 # @param Q Hoeveelheid neerslag in de bui (=Intensiteit (mm/u) x Tn (uur)) (mm) [numeric]
 # @param bmax Globale schatting van de totale maximale berging (mm). Zie functie Bmax().
 # @return data.frame met kolommen Qeff=afgevoerde hoeveelheid (mm) en Ba=Benutte berging tijdens afvoer (mm) [numeric]
