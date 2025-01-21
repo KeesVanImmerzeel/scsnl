@@ -23,7 +23,7 @@ Bereken Tpiek, Qpiek, Q en (optioneel) TN behorende bij een bui met een herhalin
 }
 
 \itemize{
-\item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+\item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 }
 
 \itemize{

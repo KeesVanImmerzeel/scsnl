@@ -8,6 +8,8 @@ Schatting van piekafvoer in vrij afwaterende gebieden in Nederland met de SCS-me
 Als raster-kaarten beschikbaar zijn van alle invoer parameters dan kan de piekafvoer
 ook vlakdekkend worden berekend.
 
+![](https://github.com/user-attachments/assets/f259c809-3570-4cf7-8064-565d0f4b1f0a)
+
 ## Installatie
 
 `install_github("KeesVanImmerzeel/scsnl")`

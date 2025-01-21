@@ -29,7 +29,7 @@ De opgegeven waarde van TN moet voorkomen in de kolom 'TN' van de tabel 'Extreme
 }
 
 \itemize{
-\item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+\item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 }
 
 \itemize{

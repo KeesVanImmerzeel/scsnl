@@ -39,8 +39,11 @@ of direct:
 bmax <- file.path(find.package("scsnl"), "extdata", "bmax.tif") |> terra::rast()
 
 Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
-  herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
-r <- c(bmax, r_ex$L, r_ex$i)
+herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
+!!! LET OP !!!: L wordt verdubbeld. Ieder rasterpunt vertegenwoordigt
+namelijk een denkbeeldig punt middenin een denkbeeldig stroomgebied waarvoor
+geldt dat de afgelegde weg van een wateuitstroompunt gelijk is aan 2*L (km).
+r <- c(bmax, 2*r_ex$L, r_ex$i)
 r100 <- r |> Qpiek_100jr(TN=2)
 
 of direct:
@@ -57,6 +60,10 @@ Bereken afvoer voor een aantal tijdstippen en bewaar het resultaat in 1 Spatrast
 Herhalingstijd van 1/100 jaar, bui met een duur van TN=2 uur.
 times <- t_default(r100$Tpiek)
 Qafv_100jrTN2uur <- lapply(as.array(times), FUN=afv, r=r100) |> terra::rast()
-names(Qafv_100jrTN2uur) <-paste0("afv_t=", times)
+r_mask <- file.path(find.package("scsnl"), "extdata", "projectgebied.tif") |> terra::rast()
+Qafv_100jrTN2uur <- r_mask * Qafv_100jrTN2uur
+names(Qafv_100jrTN2uur) <-paste0(times)
+fnames <- paste0("Qafv_100jrTN2uur_t=", names(Qafv_100jrTN2uur),".tif")
+Qafv_100jrTN2uur |> terra::writeRaster(fnames)
   }
 }

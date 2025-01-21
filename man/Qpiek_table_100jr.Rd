@@ -11,7 +11,7 @@ Qpiek_table_100jr(df = Extreme_buien_table, bmax, L, i)
 
 \item{bmax}{Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().}
 
-\item{L}{Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)}
+\item{L}{Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)}
 
 \item{i}{Gemiddelde terreinheilling van het stroomgebied (m/m).}
 }
