@@ -135,7 +135,7 @@ Qeff <- function(Q, bmax) {
   return(df)
 }
 
-# @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+# @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 # @param bmax: zie hierboven [numeric]
 # @param i Gemiddelde terreinheilling van het stroomgebied (m/m). [numeric]
 # @return Concentratietijd (=maat voor de vertraging tussen de neerslag en afvoer) (uur) [numeric]
@@ -166,7 +166,7 @@ Qpiek <- function(qeff, tb) {
 #' @param x named vector with (bmax, L, i en optioneel TN)
 #' @param df \code{\link{Extreme_buien_table}}
 #' @details * bmax: Globale schatting van de totale maximale berging (mm)
-#' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+#' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @details * TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 #' @details *     Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
@@ -294,7 +294,7 @@ Bmax <- function(r, df1 = Bmax_table,
 #'
 #' @param df Extreme_buien_table
 #' @param bmax Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().
-#' @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+#' @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 #' @param i Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @returns data.frame met kolommen: FREQ, TN, Q, Qeff, Ba, Tb, Tpiek, Qpiek.
 #' @details * FREQ: Frequentie: ... keer per jaar (-).
@@ -327,7 +327,7 @@ Qpiek_table_100jr <- function(df=Extreme_buien_table, bmax, L, i) {
 #' @details Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
 #' @details De opgegeven waarde van TN moet voorkomen in de kolom 'TN' van de tabel 'Extreme_buien_table'.
 #' @details * bmax: Globale schatting van de totale maximale berging (mm)
-#' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km)
+#' @details * L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 #' @details * i: Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @details * TN: (optioneel) Duur van de bui (uur). Als gebruikt als invoer, moet TN voorkomen in de tabel 'Extreme_buien_table'.
 #' @details *     Als TN niet is gespecificeerd, dan wordt de tijdsduur TN opgezocht die leidt tot de grootste piekafvoer (Qpiek).
@@ -382,9 +382,11 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' bmax <- file.path(find.package("scsnl"), "extdata", "bmax.tif") |> terra::rast()
 #'
 #' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
-#'   herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
-#' r_ex$i <- mean(terra::values(r_ex$i), na.rm=TRUE)
-#' r <- c(bmax, r_ex$L, r_ex$i)
+#' herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
+#' !!! LET OP !!!: L wordt verdubbeld. Ieder rasterpunt vertegenwoordigt
+#' namelijk een denkbeeldig punt middenin een denkbeeldig stroomgebied waarvoor
+#' geldt dat de afgelegde weg van een wateuitstroompunt gelijk is aan 2*L (km).
+#' r <- c(bmax, 2*r_ex$L, r_ex$i)
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'
 #' of direct:
@@ -401,10 +403,10 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #' Herhalingstijd van 1/100 jaar, bui met een duur van TN=2 uur.
 #' times <- t_default(r100$Tpiek)
 #' Qafv_100jrTN2uur <- lapply(as.array(times), FUN=afv, r=r100) |> terra::rast()
-#' fnames <- paste0(names(Qafv_100jrTN2uur),".tif")
 #' r_mask <- file.path(find.package("scsnl"), "extdata", "projectgebied.tif") |> terra::rast()
 #' Qafv_100jrTN2uur <- r_mask * Qafv_100jrTN2uur
-#' names(Qafv_100jrTN2uur) <-paste0("Qafv_100jrTN2uur_t=", times)
+#' names(Qafv_100jrTN2uur) <-paste0(times)
+#' fnames <- paste0("Qafv_100jrTN2uur_t=", names(Qafv_100jrTN2uur),".tif")
 #' Qafv_100jrTN2uur |> terra::writeRaster(fnames)
 #'   }
 #' @export
