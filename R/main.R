@@ -438,3 +438,4 @@ t_default <- function(r, prc=0.95) {
 # x <- hist(terra::values(r100$Tpiek), plot=FALSE)
 # i <- which(cumsum(x$density)<0.95)
 # c(x$breaks[i], x$mids[i])
+

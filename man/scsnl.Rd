@@ -14,6 +14,33 @@ Tabellen:
 \code{\link{Extreme_buien_table}} \cr
 \code{\link{Extreme_afvoer_table}}
 
+Tabel voor de constructie van extreme buiten tabel (zoals \code{\link{Extreme_buien_table}}):
+\itemize{
+\item \strong{Extreme_buien.csv} Database (tabel) met neerslagstatistieken.
+}
+
+Kolommen in deze tabel:
+\itemize{
+\item FREQ: Frequentie: ... keer per jaar. (-)
+\item DUUR: Duur van de bui (TIJDSEENHEID)
+\item TIJDSEENHEID: minuut, uur of dag
+\item Q: Hoeveelheid neerslag in de bui. (mm)
+\item BRON: Referentie (-)
+\item PERIODE: Periode waar de statistiek betrekking op heeft (Jaar, Winter, Zomer)
+\item REF_JAAR: Indicatie van het jaar waarop de statistiek betrekking heeft (-)
+\item SCENARIO: Aanduiding van het scenario waarop de statistiek is gebaseerd (-).
+}
+
+Hoe deze dataset te gebruiken? Voorbeeld":
+
+\code{fname <- file.path( find.package("scsnl"), "extdata", "Extreme_buien.csv")}\cr
+\code{df <- fname |> read.csv(sep=";", dec = ",")}\cr
+\code{df <- df[ , colSums(is.na(df))==0]}\cr
+\code{df \%<>\% dplyr::filter(BRON=="Neerslagstatistiek KNMI23 tabel 8 p. 26")}\cr
+\code{df\%<>\% dplyr::filter(FREQ==0.1)}\cr
+\code{df \%<>\% dplyr::mutate(TN = dplyr::case_when(TIJDSEENHEID=="dag" ~ DUUR*24, TIJDSEENHEID=="min" ~ DUUR/60, TIJDSEENHEID=="uur" ~ DUUR))}\cr
+\code{df \%<>\% dplyr::select(FREQ, TN, Q)}\cr
+
 Constants:
 
 \code{\link{clandgebruik}}
@@ -24,6 +51,8 @@ Schatting van piekafvoer in vrij afwaterende gebieden in Nederland met de SCS-me
 \details{
 De berekening kan worden gedaan op puntniveau, resulterend in een tabel. Als raster-kaarten beschikbaar
 zijn van alle invoer parameters dan kan de piekafvoer ook vlakdekkend worden berekend.
+
+Er is een tabel aanwezig voor de keuze van diverse neerslagstatistieken (zie hieronder).
 
 Functies:
 
@@ -38,22 +67,22 @@ Rasters:
 \item \strong{r_ex}: Voorbeeld SpatRaster met layers met betrekking tot de bovenlopen van de Beerze (NL).
 }
 
-Om deze dataset te gebruiken:
-\itemize{
-\item \code{r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()}
-}
-
-Layers:
+Met layers:
 \itemize{
 \item bofek: BOFEK-profiel (320, 302, 505, 406, 405,203 of 103) \cr
 \item gws: Grondwaterstand (m-mv) \cr
 \item tijdstip: 0=einde_winter of 1=einde_zomer. \cr
 \item buisdrainage: 0=nee of 1=ja. \cr
-\item grondwatertrap: 20, 30, 50, 60, 70. \cr
+\item gt: grondwatertrap (20, 30, 50, 60, 70). \cr
 \item landgebruik: 0=korte vegetatie, 1=braakliggende grond/onverharde weg, 2=verharde weg/bebouwing, 3=bos.\cr
 \item retentie: Berging in retentie gebieden.\cr
 \item L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km). \cr
 Verdubbel deze lengte bij de invoer van de functie \code{\link{Qpiek_table_100jr}} \cr
-\item i: Gemiddelde terreinheilling van het stroomgebied (m/m).
+\item i: Gemiddelde terreinheilling van het stroomgebied (m/m).\cr
+}
+
+Om deze dataset te gebruiken:
+\itemize{
+\item \code{r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()}
 }
 }
