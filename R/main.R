@@ -383,9 +383,10 @@ Qpiek_100jr <- function(r, TN = NULL, df = Extreme_buien_table) {
 #'
 #' Bereken Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q waarbij:
 #' herhalingstijd 1/100 jaar, duur van de bui TN=2 uur.
-#' !!! LET OP !!!: L wordt verdubbeld. Ieder rasterpunt vertegenwoordigt
-#' namelijk een denkbeeldig punt middenin een denkbeeldig stroomgebied waarvoor
-#' geldt dat de afgelegde weg van een wateuitstroompunt gelijk is aan 2*L (km).
+#' !!! LET OP !!!: L wordt verdubbeld.  Ieder rasterpunt vertegenwoordigt namelijk
+#' een punt middenin een denkbeeldig stroomgebied waarvoor geldt dat de afgelegde
+#' weg van een waterdeeltje, vanuit het verste punt van het stroomgebied gelijk is
+#' aan 2*L (km).
 #' r <- c(bmax, 2*r_ex$L, r_ex$i)
 #' r100 <- r |> Qpiek_100jr(TN=2)
 #'

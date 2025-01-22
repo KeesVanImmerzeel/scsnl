@@ -37,20 +37,36 @@ ook vlakdekkend worden berekend.
     * `Qpiek`: Qpiek: Hoogte van de piekafvoer (mm/uur).
 * `Qpiek_100jr()`: Maak kaarten (SpatRasters) van Tpiek, Qpiek, TN en Q. Optioneel kan TN als input worden opgegeven. In dat geval worden piekafvoeren berekend bij een duur van de bui TN (uur).
   * Input:
-    * Spatraster met layers bmax, L, i, TN (optioneel). Toelichting: zie hierboven.
+    * Spatraster met layers bmax, L, i, TN (optioneel).  Toelichting: zie hierboven.
+    De afstand L (km) moet in dat geval worden verdubbeld. Ieder rasterpunt vertegenwoordigt
+    namelijk een punt middenin een denkbeeldig stroomgebied waarvoor
+geldt dat de afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied gelijk is aan 2*L (km).
   * Output:
     * Spatraster met layers Tpiek, Qpiek, TN, Tc, Tb en Q (zie hierboven).
-
-* `Qfun()`: Maak een list van functies waarmee per rasterpunt de afvoer kan worden berekend (mm/u).
+* `afv()`: Maak spatraster(s) van de afvoer (mm/u) op tijdstip t (uur).
   * Input:
-    * `x`: Spatraster met (named) layers Tpiek, Qpiek, Tb. Toelichting: zie hierboven.
+    * `r`: Spatraster met layers Tpiek, Qpiek, Tb (bij herhalingstijd van 1/100 jaar).
+    Toelichting: zie hierboven.
+    * `t`: Tijd (uur)
   * Output:
-    * List van functies waarmee per rasterpunt de afvoer (mm/u) kan worden berekend als functie van de tijd (uur).
+    * Spatraster met de afvoer (mm/u) op tijdstip t (uur).
+* `rel_afv()`: Relatieve extreme afvoer (-) bij herhalingstijd van T (x per jaar)
+   t.o.v. de extreme afvoer bij een herhalingstijd van eens per 100 jaar (T=0.01).
+  * Input:
+    * `T`: T Herhalingstijd T (x per jaar)
+  * Output:
+    *  Relatieve afvoer (-) bij herhalingstijd van T (x per jaar).
+* `t_default()`: Suggestie voor uitvoertijden (u).
+  * Input:
+    * `r`: Spatraster met het tijdtip van de piekafvoeren Tpiek (u).
+    * `prc`: Percentiel waarde van piekafvoeren; prc% van de piekafvoeren is kleiner (-)
+  * Output:
+    *  Gesuggereerde uitvoertijden (u)
 
-    
+
 ## Datasets
 
-* `r_ex`: Example input SpatRaster with layers of the Beerze region (Netherlands). Used as: `r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()`
+* `r_ex`: Voorbeeld input Spatraster met informatie van de Beerze. Inlezen gaat als volgt: `r_ex <- file.path( find.package("scsnl"), "extdata", "r_ex.tif") |> terra::rast()`
 * `Bmax_table`: Eerste schatting van de maximale bodemberging (mm) met en zonder drainage.
 * `Bbovengronds_table`: Globale schatting van de maximale berging in/op onbegroeide bodem.
 * `Bmax_onbegroeid_table`: Globale schatting van de maximale berging in/op onbegroeide bodem.

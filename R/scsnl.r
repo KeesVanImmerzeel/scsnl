@@ -15,9 +15,7 @@
 #'
 #' Rasters:
 #'
-#' * \strong{r_ex}: HELP map of the Netherlands based on the Bofek2020 map.
-#'
-#' Voorbeeld SpatRaster met layers met betrekking tot de bovenlopen van de Beerze (NL).
+#' * \strong{r_ex}: Voorbeeld SpatRaster met layers met betrekking tot de bovenlopen van de Beerze (NL).
 #'
 #' Om deze dataset te gebruiken:
 #'
@@ -32,6 +30,7 @@
 #' - landgebruik: 0=korte vegetatie, 1=braakliggende grond/onverharde weg, 2=verharde weg/bebouwing, 3=bos.\cr
 #' - retentie: Berging in retentie gebieden.\cr
 #' - L: Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het rekenpunt (km). \cr
+#'   Verdubbel deze lengte bij de invoer van de functie \code{\link{Qpiek_table_100jr}} \cr
 #' - i: Gemiddelde terreinheilling van het stroomgebied (m/m).
 #'
 #' @source <http://www.grondwaterzakboekje.nl/> {grondwaterzakboekje}
