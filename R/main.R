@@ -293,7 +293,7 @@ Bmax <- function(r, df1 = Bmax_table,
 #' Bereken tabel met piekafvoer parameters bij een herhalingstijd van 1/100 jaar.
 #'
 #' @param df Extreme_buien_table
-#' @param bmax Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().
+#' @param bmax Globale schatting van de totale maximale berging (mm).
 #' @param L Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)
 #' @param i Gemiddelde terreinheilling van het stroomgebied (m/m).
 #' @returns data.frame met kolommen: FREQ, TN, Q, Qeff, Ba, Tb, Tpiek, Qpiek.

@@ -9,7 +9,7 @@ Qpiek_table_100jr(df = Extreme_buien_table, bmax, L, i)
 \arguments{
 \item{df}{Extreme_buien_table}
 
-\item{bmax}{Globale schatting van de totale maximale berging (mm, SpatRaster). Zie functie Bmax().}
+\item{bmax}{Globale schatting van de totale maximale berging (mm).}
 
 \item{L}{Afgelegde weg van een waterdeeltje, vanuit het verste punt van het stroomgebied tot aan het uitstroompunt (km)}
 
